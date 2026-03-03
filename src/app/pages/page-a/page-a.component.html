@@ -1,0 +1,121 @@
+<div class="page-layout" [class.sidebar-closed]="!sidebarOpen()">
+  <!-- Sidebar -->
+  @if (sidebarOpen()) {
+    <aside class="sidebar">
+      <h3>Sidebar</h3>
+      <div class="sidebar-content">
+        <div class="state-display">
+          <h4>Current State</h4>
+          <div class="state-item">
+            <span class="label">Loading:</span>
+            <span class="value" [class.active]="loading()">{{ loading() }}</span>
+          </div>
+          <div class="state-item">
+            <span class="label">Search:</span>
+            <span class="value">{{ searchTerm() || '(empty)' }}</span>
+          </div>
+          <div class="state-item">
+            <span class="label">Tab:</span>
+            <span class="value">{{ selectedTab() }}</span>
+          </div>
+          <div class="state-item">
+            <span class="label">Sidebar Open:</span>
+            <span class="value" [class.active]="sidebarOpen()">{{ sidebarOpen() }}</span>
+          </div>
+          <div class="state-item">
+            <span class="label">Preview:</span>
+            <span class="value" [class.active]="showPreview()">{{ showPreview() }}</span>
+          </div>
+          <div class="state-item">
+            <span class="label">Preview ID:</span>
+            <span class="value">{{ previewItemId() ?? 'none' }}</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  }
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="toolbar">
+      <button class="btn btn-icon" (click)="toggleSidebar()" title="Toggle sidebar">
+        {{ sidebarOpen() ? '◀' : '▶' }}
+      </button>
+
+      <div class="search-box">
+        <input
+          type="text"
+          [value]="searchTerm()"
+          (input)="onSearch($event)"
+          placeholder="Search documents..."
+        />
+      </div>
+
+      <button class="btn" [class.active]="loading()" (click)="toggleLoading()">
+        {{ loading() ? 'Stop Loading' : 'Simulate Load' }}
+      </button>
+
+      <button class="btn" [class.active]="showPreview()" (click)="togglePreview()">
+        {{ showPreview() ? 'Hide Preview' : 'Show Preview' }}
+      </button>
+    </div>
+
+    <!-- Tabs (shared state) -->
+    <div class="tabs">
+      @for (tab of tabs; track tab) {
+        <button
+          class="tab"
+          [class.active]="selectedTab() === tab"
+          (click)="selectTab(tab)"
+        >
+          {{ tab | titlecase }}
+        </button>
+      }
+    </div>
+
+    @if (loading()) {
+      <div class="loading-overlay">
+        <div class="spinner"></div>
+        <span>Loading documents...</span>
+      </div>
+    }
+
+    <!-- Content area -->
+    <div class="content-area">
+      <div class="item-list">
+        @for (item of filteredItems(); track item.id) {
+          <div
+            class="item-card"
+            [class.selected]="previewItemId() === item.id"
+            (click)="selectItem(item.id)"
+          >
+            <h4>{{ item.title }}</h4>
+            <p>{{ item.description }}</p>
+          </div>
+        } @empty {
+          <div class="empty-state">No documents match your search.</div>
+        }
+      </div>
+
+      <!-- Preview Panel (Page A specific) -->
+      @if (showPreview()) {
+        <div class="preview-panel">
+          <h3>Preview Panel</h3>
+          @if (previewItemId(); as id) {
+            @if (getItem(id); as item) {
+              <div class="preview-content">
+                <h4>{{ item.title }}</h4>
+                <p>{{ item.description }}</p>
+                <div class="preview-meta">
+                  <span>ID: {{ item.id }}</span>
+                </div>
+              </div>
+            }
+          } @else {
+            <p class="hint">Click an item to preview it</p>
+          }
+        </div>
+      }
+    </div>
+  </main>
+</div>

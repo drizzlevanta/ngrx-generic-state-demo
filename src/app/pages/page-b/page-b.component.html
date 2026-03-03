@@ -1,0 +1,124 @@
+<div class="page-layout" [class.sidebar-closed]="!sidebarOpen()">
+  <!-- Sidebar -->
+  @if (sidebarOpen()) {
+    <aside class="sidebar">
+      <h3>Sidebar</h3>
+      <div class="state-display">
+        <h4>Current State</h4>
+        <div class="state-item">
+          <span class="label">Loading:</span>
+          <span class="value" [class.active]="loading()">{{ loading() }}</span>
+        </div>
+        <div class="state-item">
+          <span class="label">Search:</span>
+          <span class="value">{{ searchTerm() || '(empty)' }}</span>
+        </div>
+        <div class="state-item">
+          <span class="label">Tab:</span>
+          <span class="value">{{ selectedTab() }}</span>
+        </div>
+        <div class="state-item">
+          <span class="label">Sidebar Open:</span>
+          <span class="value" [class.active]="sidebarOpen()">{{ sidebarOpen() }}</span>
+        </div>
+        <div class="state-item">
+          <span class="label">Filter:</span>
+          <span class="value">{{ filterMode() }}</span>
+        </div>
+        <div class="state-item">
+          <span class="label">Columns:</span>
+          <span class="value">{{ columnLayout() }}</span>
+        </div>
+      </div>
+    </aside>
+  }
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="toolbar">
+      <button class="btn btn-icon" (click)="toggleSidebar()" title="Toggle sidebar">
+        {{ sidebarOpen() ? '◀' : '▶' }}
+      </button>
+
+      <div class="search-box">
+        <input
+          type="text"
+          [value]="searchTerm()"
+          (input)="onSearch($event)"
+          placeholder="Search products..."
+        />
+      </div>
+
+      <button class="btn" [class.active]="loading()" (click)="toggleLoading()">
+        {{ loading() ? 'Stop Loading' : 'Simulate Load' }}
+      </button>
+    </div>
+
+    <!-- Tabs (shared state) -->
+    <div class="tabs">
+      @for (tab of tabs; track tab) {
+        <button
+          class="tab"
+          [class.active]="selectedTab() === tab"
+          (click)="selectTab(tab)"
+        >
+          {{ tab | titlecase }}
+        </button>
+      }
+    </div>
+
+    @if (loading()) {
+      <div class="loading-overlay">
+        <div class="spinner"></div>
+        <span>Loading products...</span>
+      </div>
+    }
+
+    <!-- Page B specific: Filter & Layout controls -->
+    <div class="controls-bar">
+      <div class="filter-controls">
+        <span class="controls-label">Filter Mode:</span>
+        <button
+          class="btn btn-sm"
+          [class.active]="filterMode() === 'simple'"
+          (click)="setFilterMode('simple')"
+        >Simple</button>
+        <button
+          class="btn btn-sm"
+          [class.active]="filterMode() === 'advanced'"
+          (click)="setFilterMode('advanced')"
+        >Advanced</button>
+      </div>
+
+      <div class="layout-controls">
+        <span class="controls-label">Columns: {{ columnLayout() }}</span>
+        <input
+          type="range"
+          min="1"
+          max="5"
+          [value]="columnLayout()"
+          (input)="onColumnChange($event)"
+        />
+      </div>
+    </div>
+
+    @if (filterMode() === 'advanced') {
+      <div class="advanced-filters">
+        <span class="hint">Advanced filters enabled — additional filter controls would go here</span>
+      </div>
+    }
+
+    <!-- Product Grid -->
+    <div class="product-grid" [style.grid-template-columns]="gridColumns()">
+      @for (product of filteredProducts(); track product.id) {
+        <div class="product-card">
+          <div class="product-price">{{ product.price | currency }}</div>
+          <h4>{{ product.name }}</h4>
+          <span class="product-category">{{ product.category }}</span>
+        </div>
+      } @empty {
+        <div class="empty-state">No products match your search.</div>
+      }
+    </div>
+  </main>
+</div>

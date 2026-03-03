@@ -1,2 +1,21 @@
-<app-nx-welcome></app-nx-welcome>
-<router-outlet></router-outlet>
+<div class="app-shell">
+  <header class="app-header">
+    <h1>NgRx Generic State Demo</h1>
+    <nav>
+      <a routerLink="/page-a" routerLinkActive="active">
+        <span class="nav-icon">A</span>
+        Page A — Documents
+      </a>
+      <a routerLink="/page-b" routerLinkActive="active">
+        <span class="nav-icon">B</span>
+        Page B — Products
+      </a>
+    </nav>
+    <div class="header-note">
+      Each page has independent state from the same generic factory
+    </div>
+  </header>
+  <div class="app-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>
