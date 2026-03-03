@@ -1,7 +1,8 @@
 import {
-  createAction,
+  createActionGroup,
   createFeature,
   createReducer,
+  emptyProps,
   on,
   props,
   ActionReducer,
@@ -22,13 +23,13 @@ const slice = createUIStateSlice<PageAExtra>('pageAUI', {
   previewItemId: null,
 });
 
-const pageASpecificActions = {
-  togglePreview: createAction('[PageA UI] Toggle Preview'),
-  selectPreviewItem: createAction(
-    '[PageA UI] Select Preview Item',
-    props<{ id: string }>()
-  ),
-};
+const pageASpecificActions = createActionGroup({
+  source: 'PageA UI',
+  events: {
+    'Toggle Preview': emptyProps(),
+    'Select Preview Item': props<{ id: string }>(),
+  },
+});
 
 export const PageAActions = {
   ...slice.actions,

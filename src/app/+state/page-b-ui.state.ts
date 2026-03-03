@@ -1,5 +1,5 @@
 import {
-  createAction,
+  createActionGroup,
   createFeature,
   createReducer,
   on,
@@ -24,16 +24,13 @@ const slice = createUIStateSlice<PageBExtra>('pageBUI', {
   columnLayout: 3,
 });
 
-const pageBSpecificActions = {
-  setFilterMode: createAction(
-    '[PageB UI] Set Filter Mode',
-    props<{ mode: FilterMode }>()
-  ),
-  setColumnLayout: createAction(
-    '[PageB UI] Set Column Layout',
-    props<{ columns: number }>()
-  ),
-};
+const pageBSpecificActions = createActionGroup({
+  source: 'PageB UI',
+  events: {
+    'Set Filter Mode': props<{ mode: FilterMode }>(),
+    'Set Column Layout': props<{ columns: number }>(),
+  },
+});
 
 export const PageBActions = {
   ...slice.actions,
